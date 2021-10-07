@@ -1,0 +1,447 @@
+//AUTHOR : Nathan Rega
+//COURSE : CPT167
+//PURPOSE : Give customers multiple options and set them back on track if they select a non-option,
+//			the programming split up into multiple sections for ease of reading and understanding.
+//STARTDATE : 9/30/21
+package edu.cpt167.rega.exercise6;
+
+import java.util.Scanner;
+
+public class RegaMainClass 
+{
+	//declaring and initializing the local constants
+	public static final double TAX_RATE = 0.075;
+	public static final String DISCOUNT_NAME_MEMBER = "Member";
+	public static final String DISCOUNT_NAME_SENIOR = "Senior";
+	public static final String DISCOUNT_NAME_NONE = "No Discount";
+	public static final String DISCOUNT_NAME_QUIT = "Quit";
+	public static final double DISCOUNT_RATE_MEMBER = 0.15;
+	public static final double DISCOUNT_RATE_SENIOR = 0.25;
+	public static final double DISCOUNT_RATE_NONE = 0.0;
+	public static final String ITEM_NAME_PREMIUM = "Video Game";
+	public static final String ITEM_NAME_SPECIAL = "Lego Set";
+	public static final String ITEM_NAME_BASIC = "Book";
+	public static final String ITEM_NAME_RETURN = "Return to Main Menu";
+	public static final double ITEM_PRICE_PREMIUM = 55.95;
+	public static final double ITEM_PRICE_SPECIAL = 24.95;
+	public static final double ITEM_PRICE_BASIC = 15.95;
+	public static final int RESET_VALUE = 0;
+	
+	//Main Method
+	public static void main(String[] args) 
+	{
+		//INTRODUCTION Section
+		//declare and initialize the Scanner
+		Scanner input = new Scanner(System.in);
+		
+		//declare and initialize all local variables
+		String userName = "";
+		char rateSelection = ' ';
+		char itemSelection = ' ';
+		int howMany = 0;
+		String discountName = "";
+		double discountRate = 0.0;
+		String itemName = "";
+		double itemPrice = 0.0;
+		double discountAmount = 0.0;
+		double discountPrice = 0.0;
+		double subTotal = 0.0;
+		double tax = 0.0;
+		double totalCost = 0.0;
+		int memberCount = 0;
+		int seniorCount = 0;
+		int noDiscountCount = 0;
+		double grandTotal = 0;
+		int premiumCount = 0;
+		int specialCount = 0;
+		int basicCount = 0;
+		double purchaseAmt = 0.0;
+		
+		//displays the welcome banner
+		displayWelcomeBanner();
+		
+		//INPUT Section
+		userName = getUserName(input);
+		rateSelection = validateMainMenu(input);
+		
+		//test rateSelection based on DISCOUNT MENU
+		while (rateSelection != 'Q')
+		{
+			itemSelection = validateItemMenu(input);
+			
+			//test itemSelection based on ITEM MENU
+			while (itemSelection != 'R')
+			{
+				howMany = validateHowMany(input);
+				
+				//test rateSelection based on DISCOUNT MENU
+				if (rateSelection == 'A')
+				{
+					discountName = DISCOUNT_NAME_MEMBER;
+					discountRate = DISCOUNT_RATE_MEMBER;
+					memberCount++;
+				} //END OF if
+				else if (rateSelection == 'B')
+				{
+					discountName = DISCOUNT_NAME_SENIOR;
+					discountRate = DISCOUNT_RATE_SENIOR;
+					seniorCount++;
+				} //END OF else if
+				else
+				{
+					discountName = DISCOUNT_NAME_NONE;
+					discountRate = DISCOUNT_RATE_NONE;
+					noDiscountCount++;
+				} //END OF else
+				
+				
+				//test itemSelection based on ITEM MENU
+				if (itemSelection == 'A')
+				{
+					itemName = ITEM_NAME_PREMIUM;
+					itemPrice = ITEM_PRICE_PREMIUM;
+					premiumCount++;
+				} //END OF if
+				else if (itemSelection == 'B')
+				{
+					itemName = ITEM_NAME_SPECIAL;
+					itemPrice = ITEM_PRICE_SPECIAL;
+					specialCount++;
+				} //END OF else if
+				else
+				{
+					itemName = ITEM_NAME_BASIC;
+					itemPrice = ITEM_PRICE_BASIC;
+					basicCount++;
+				} //END OF else	
+				
+				//PROCESS Section
+				discountAmount = itemPrice * discountRate;
+				discountPrice = itemPrice - discountAmount;
+				purchaseAmt = howMany * discountPrice;
+				subTotal = subTotal + purchaseAmt;
+				
+				//OUTPUT Section
+				displayItemReceipt(itemName, itemPrice, discountName, discountRate, discountAmount,
+						discountPrice, howMany, purchaseAmt, subTotal);
+				
+				itemSelection = validateItemMenu(input);
+				
+			} //END OF while (itemSelection != 'Q')
+			
+			//2nd PROCESS Section
+			tax = subTotal * TAX_RATE;
+			totalCost = subTotal + tax;
+			grandTotal = grandTotal + totalCost;
+			
+			//2nd OUTPUT Section
+			displayOrderTotal(userName, subTotal, tax, totalCost);
+			
+			subTotal = RESET_VALUE;
+			
+			rateSelection = validateMainMenu(input);
+		} //END OF while (rateSelection != 'Q')
+		
+		if (grandTotal > 0.0)
+		{
+			displayFinalReport(memberCount, seniorCount, noDiscountCount, premiumCount,
+					specialCount, basicCount, grandTotal);
+		}
+		
+		//displays farewell message
+		displayFarewellMessage();
+		
+		//close Scanner
+		input.close();
+	} //END OF main method
+	
+	
+	
+	//Void Methods
+	//void method to display Welcome Banner
+	public static void displayWelcomeBanner()
+	{
+			
+		System.out.println("Welcome to the Entertainment Selection Program!");
+		System.out.println("By using our program, we will run the numbers to let you get");
+		System.out.println("your choice of fun real fast!");
+		//border - makes output easier to read
+		System.out.println("***** ***** ***** ***** *****  ***** ***** ***** ***** *****");
+		
+		return;
+	}//END OF WelcomeBanner method
+		
+		
+	//void method to display Farewell Message
+	public static void displayFarewellMessage()
+	{
+		System.out.println("Thank you for using the Entertainment Selection Program!");
+		System.out.println("Have a spectacular day!");
+		
+		return;
+	} //END OF FarewellMessage method
+	
+	
+	//void method to display ITEM REPORT
+	public static void displayItemReceipt(String borrowedItemName, double borrowedItemPrice, 
+			String borrowedDiscountName, double borrowedDiscountRate, double borrowedDiscountAmount,
+			double borrowedDiscountPrice, int borrowedHowMany, double borrowedPurchaseAmt, 
+			double borrowedSubTotal)
+	{
+		//border - makes output easier to read
+		System.out.println("\n~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+		//report title
+		System.out.println("ITEM REPORT");
+		//border - makes output easier to read
+		System.out.println("~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+		//format specifiers, label, space, value
+		System.out.printf("%-25s %1s %1s\n", "Item Name", " ", borrowedItemName);
+		//format specifiers, label, dollar sign, value
+		System.out.printf("%-25s %3s %7.2f\n", "Original Price", "$", borrowedItemPrice);
+		//format specifiers, label, space, value
+		System.out.printf("%-25s %1s %1s\n", "Discount Type", " ", borrowedDiscountName);
+		//format specifiers, label, value * 100, percent sign
+		System.out.printf("%-25s %10.1f %1s\n", "Discount Rate", borrowedDiscountRate * 100, "%");
+		//format specifiers, label, dollar sign, value
+		System.out.printf("%-25s %3s %7.2f\n", "Discount Amount", "$", borrowedDiscountAmount);
+		//format specifiers, label, dollar sign, value
+		System.out.printf("%-25s %3s %7.2f\n", "Discounted Price", "$", borrowedDiscountPrice);
+		//format specifiers, label, space, value
+		System.out.printf("%-25s %1s %9d\n", "Quantity", " ",  borrowedHowMany);
+		//format specifiers, label, dollar sign, value
+		System.out.printf("%-25s %3s %7.2f\n", "Purchase Amount", "$", borrowedPurchaseAmt);
+		//format specifiers, label, dollar sign, value
+		System.out.printf("%-25s %3s %7.2f\n", "Subtotal", "$", borrowedSubTotal);
+		//border - makes output easier to read
+		System.out.println("~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+		
+		return;
+	} //END OF displayItemReceipt method
+	
+	
+	//void method to display ORDER REPORT
+	public static void displayOrderTotal(String borrowedUserName, double borrowedSubTotal, 
+			double borrowedTax, double borrowedTotalCost)
+	{
+		//border - makes output easier to read
+		System.out.println("\n~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+		//report title
+		System.out.println("ORDER REPORT");
+		//border - makes output easier to read
+		System.out.println("~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+		//format specifiers, label, space, value
+		System.out.printf("%-25s %1s %1s\n", "User", " ", borrowedUserName);
+		//format specifiers, label, dollar sign, value
+		System.out.printf("%-25s %3s %7.2f\n", "Subtotal", "$",borrowedSubTotal);
+		//format specifiers, label, dollar sign, value
+		System.out.printf("%-25s %3s %7.2f\n", "Tax", "$", borrowedTax);
+		//format specifiers, label, dollar sign, value
+		System.out.printf("%-25s %3s %7.2f\n", "Total Cost", "$", borrowedTotalCost);
+		//border - makes output easier to read
+		System.out.println("~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+		
+		return;
+	} //END OF displayOrderTotal method
+	
+	
+	//void method to display FINAL REPORT
+	public static void displayFinalReport(int borrowedMemberCount, int borrowedSeniorCount, 
+			int borrowedNoDiscount,int borrowedPremiumCount, int borrowedSpecialCount, 
+			int borrowedBasicCount, double borrowedGrandTotal)
+	{
+		//border - makes output easier to read
+		System.out.println("\n~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+		//report title
+		System.out.println("FINAL REPORT");
+		//border - makes output easier to read
+		System.out.println("~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+		//format specifiers, label
+		System.out.printf("%-25s","Count of discount types: \n");
+		//format specifiers, label value, amount value
+		System.out.printf("%-25s %9d\n", DISCOUNT_NAME_MEMBER, borrowedMemberCount);
+		//format specifiers, label value, amount value
+		System.out.printf("%-25s %9d\n", DISCOUNT_NAME_SENIOR, borrowedSeniorCount);
+		//format specifiers, label value, amount value
+		System.out.printf("%-25s %9d\n", DISCOUNT_NAME_NONE, borrowedNoDiscount);
+
+		//border - makes output easier to read
+		System.out.println("~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+		//format specifiers, label
+		System.out.printf("%-25s", "Count of item types:");
+		//format specifiers, label value, amount value
+		System.out.printf("\n%-25s %9d", ITEM_NAME_PREMIUM, borrowedPremiumCount);
+		//format specifiers, label value, amount value
+		System.out.printf("\n%-25s %9d", ITEM_NAME_SPECIAL, borrowedSpecialCount);
+		//format specifiers, label value, amount value
+		System.out.printf("\n%-25s %9d\n", ITEM_NAME_BASIC, borrowedBasicCount);
+		//border - makes output easier to read
+		System.out.println("~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+		//format specifiers, label, dollar sign, value
+		System.out.printf("%-25s %1s %7.2f\n", "Grand Total", "$", borrowedGrandTotal);
+		
+		return;
+	} //END OF displayFinalReport method
+	
+	
+	//void method to display MAIN MENU
+	public static void displayMainMenu()
+	{
+		//border - makes output easier to read
+		System.out.println("~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+		//format specifiers, Menu Title
+		System.out.printf("%-25s", "DISCOUNT MENU");
+		//format specifiers, label, name value, rate value * 100, percent sign
+		System.out.printf("\n%-1s %1s %15.1f %1s\n", "[A] for", DISCOUNT_NAME_MEMBER, 
+				DISCOUNT_RATE_MEMBER * 100, "%");
+		//format specifiers, label, name value, rate value * 100, percent sign
+		System.out.printf("%-1s %1s %15.1f %1s\n", "[B] for", DISCOUNT_NAME_SENIOR,
+				DISCOUNT_RATE_SENIOR * 100, "%");
+		//format specifiers, label, name value, rate value, percent sign
+		System.out.printf("%-1s %1s %10.1f %1s\n", "[C] for", DISCOUNT_NAME_NONE,
+				DISCOUNT_RATE_NONE, "%");
+		//format specifiers, label, value
+		System.out.printf("%-1s %1s\n", "[Q] to", DISCOUNT_NAME_QUIT);
+		//border - makes output easier to read
+		System.out.println("~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+	} //END OF displayMainMenu method
+	
+	
+	//void method to display ITEM MENU
+	public static void displayItemMenu()
+	{
+		//border - makes output easier to read
+		System.out.println("~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+		//format specifiers, Menu Title
+		System.out.printf("%-25s", "ITEM MENU");
+		//format specifiers, label, name value, dollar sign, price value
+		System.out.printf("\n%-1s %1s %8s %1.2f\n", "[A] for", ITEM_NAME_PREMIUM, 
+				"$", ITEM_PRICE_PREMIUM);
+		//format specifiers, label, name value, dollar sign, price value
+		System.out.printf("%-1s %1s %10s %1.2f\n", "[B] for", ITEM_NAME_SPECIAL,
+				"$", ITEM_PRICE_SPECIAL);
+		//format specifiers, label, name value, dollar sign, price value
+		System.out.printf("%-1s %1s %14s %1.2f\n", "[C] for", ITEM_NAME_BASIC,
+				"$", ITEM_PRICE_BASIC);
+		//format specifiers, label, value
+		System.out.printf("%-1s %1s\n", "[R] to", ITEM_NAME_RETURN);
+		//border - makes output easier to read
+		System.out.println("~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+	} //END OF displayItemMenu method
+	
+	
+	//VR Methods
+	//void method to prompt user for their name
+	public static String getUserName(Scanner borrowedInput)
+	{
+		String localUserName = "";
+		
+		//prompts user for their name
+		System.out.print("What is your name? ");
+		//assignment statement
+		localUserName = borrowedInput.nextLine();
+		
+		return localUserName;
+	} //END OF getUserName method
+	
+	
+	//void method to display DISCOUNT MENU
+	public static char validateMainMenu (Scanner borrowedInput)
+	{
+	
+		char localSelection = ' ';
+	
+		displayMainMenu();
+	
+		//prompts user for DISCOUNT MENU option
+		System.out.print("Enter your selection here : ");
+		//assignment statement
+		localSelection = borrowedInput.next().toUpperCase().charAt(0);
+		
+		//test rateSelection based on DISCOUNT MENU
+		while (localSelection != 'A' && localSelection != 'B' && 
+			localSelection != 'C' && localSelection != 'Q')
+		{
+			//border - makes output easier to read
+			System.out.println("\n~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+			//displays error
+			System.out.println("The selection made is invalid. Please try again.");
+			
+			displayMainMenu();
+			
+			//prompts user for DISCOUNT MENU option
+			System.out.print("Enter your selection here : ");
+			//assignment statement
+			localSelection = borrowedInput.next().toUpperCase().charAt(0);
+		} /*END OF while (rateSelection != 'A' && rateSelection != 'B' && 
+		rateSelection != 'C' && rateSelection != 'Q')*/
+	
+	return localSelection;
+	} //END OF validateMainMenu method
+		
+		
+	//void method to display ITEM MENU
+	public static char validateItemMenu (Scanner borrowedInput)
+	{
+		
+		char localSelection = ' ';
+		
+		displayItemMenu();
+		
+		//prompts user for ITEM MENU option
+		System.out.print("Enter your selection here : ");
+		//assignment statement
+		localSelection = borrowedInput.next().toUpperCase().charAt(0);
+
+		//test itemSelection based on ITEM MENU
+		while (localSelection != 'A' && localSelection != 'B' && localSelection != 'C'
+				&& localSelection != 'R')
+		{
+			//border - makes output easier to read
+			System.out.println("\n~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+			//displays error
+			System.out.println("The selection entered is invalid. Please try again.");
+			
+			displayItemMenu();
+			
+			//prompts user for ITEM MENU option
+			System.out.print("Enter your selection here : ");
+			//assignment statement
+			localSelection = borrowedInput.next().toUpperCase().charAt(0);
+		} //END OF (itemSelection != 'A' && itemSelection != 'B' && itemSelection != 'C')
+			
+		return localSelection;
+	} //END OF validateItemMenu method
+		
+	
+	//void method to get how many
+	public static int validateHowMany(Scanner borrowedInput)
+	{
+		int localHowMany = 0;
+		
+		//prompts user for how many of the item
+		System.out.print("\nHow many are you purchasing? ");
+		//assignment statement
+		localHowMany = borrowedInput.nextInt();
+		
+		//test localHowMany based on input
+		while (localHowMany <= 0)
+		{
+			//border - makes output easier to read
+			System.out.println("\n~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+			//displays error
+			System.out.println("The value entered is invalid. Please try again.");
+			//border - makes output easier to read
+			System.out.println("~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~  ~~~~ ~~~~ ~~~~ ~~~~ ~~~~ ~~~~");
+			
+			//prompts user for how many of the item
+			System.out.print("\nHow many are you purchasing? ");
+			//assignment statement
+			localHowMany = borrowedInput.nextInt();
+		}
+		
+		return localHowMany;
+	} //END OF validateHowMany method	
+		
+		
+	
+}//END OF Mainmethod
